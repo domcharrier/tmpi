@@ -8,6 +8,10 @@
 additional_vars=( LD_LIBRARY_PATH LD_PRELOAD )
 export "${additional_vars[@]}"
 
+MPIRUN=mpirun
+[[ "$EUID" == "0" ]] && [[ "$(mpirun --version)" == *"Open MPI"* ]] &&\ # "if we are root and use OpenMPI"
+  MPIRUN+=" --allow-run-as-root"
+
 usage() {
     echo 'tmpi: Run multiple MPI processes as a grid in a new tmux window and multiplex keyboard input to all of them.'
     echo ''
@@ -16,7 +20,7 @@ usage() {
     echo ''
     echo 'You need to pass at least two arguments.'
     echo 'The first argument is the number of processes to use, every argument after that is the commandline to run.'
-    echo 'If you call this script from outside tmux and your command contains important whitespace then you need to appy two levels of quoting to preserve it.' 
+    echo 'If you call this script from outside tmux and your command contains important whitespace then you need to appy two levels of quoting to preserve it.'
     echo ''
     echo 'LD_LIBRARY_PATH and LD_PRELOAD are passed through, so you can run it like this:'
     echo 'LD_LIBRARY_PATH="${PWD}/.libs:${LD_LIBRARY_PATH}" tmpi 16 gdb -q bin/.libs/example'
@@ -115,7 +119,6 @@ else
     echo 0 > /tmp/tmpi.lock
 
     # re-execute ourself to spawn of the processes.
-    echo mpirun -np ${processes} ${self} runmpi "${@}"
-    mpirun -np ${processes} ${self} runmpi "${@}"
+    echo $MPIRUN -np ${processes} ${self} runmpi "${@}"
+    $MPIRUN -np ${processes} ${self} runmpi "${@}"
 fi
-
