@@ -9,8 +9,8 @@ additional_vars=( LD_LIBRARY_PATH LD_PRELOAD )
 export "${additional_vars[@]}"
 
 MPIRUN=mpirun
-[[ "$EUID" == "0" ]] && [[ "$(mpirun --version)" == *"Open MPI"* ]] &&\ # "if we are root and use OpenMPI"
-  MPIRUN+=" --allow-run-as-root"
+[[ "$EUID" == "0" ]] && [[ "$(mpirun --version)" == *"Open MPI"* ]] &&\
+  MPIRUN+=" --allow-run-as-root" # add this flag if we are root and use OpenMPI
 
 usage() {
     echo 'tmpi: Run multiple MPI processes as a grid in a new tmux window and multiplex keyboard input to all of them.'
